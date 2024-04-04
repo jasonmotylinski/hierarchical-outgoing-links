@@ -6,3 +6,10 @@ available in the app when your plugin is enabled.
 If your plugin does not need CSS, delete this file.
 
 */
+.workspace-leaf-content[data-type='hierarchical-outgoing-links-view'] .view-content{
+    padding: 0px;
+}
+
+.workspace-leaf-content[data-type='hierarchical-outgoing-links-view'] .view-content .outgoing-link-item {
+    padding-left: 8px;
+}
