@@ -52,7 +52,26 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         const treeItem=parent.createDiv({cls: "tree-item"});
         const treeItemSelf=treeItem.createDiv({cls: "tree-item-self is-clickable outgoing-link-item"});
         const treeItemIcon=treeItemSelf.createDiv({cls: "tree-item-icon collapse-icon"});
-        const treeItemInner=treeItemSelf.createDiv({cls: "tree-item-inner", text: item.name});
+
+        let name = item.name;
+
+        if(item.children && item.children.length == 0){
+            const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
+            
+            if(firstLink){
+                name=firstLink.basename;
+            }
+        }
+        const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
+        const treeItemInner=treeItemSelf.createDiv({cls: "tree-item-inner", text: name});
+
+        treeItemInner.addEventListener('click', (e)=> {
+            const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
+            
+            if(firstLink){
+                this.app.workspace.openLinkText(firstLink.name, firstLink.path);
+            }
+        });
 
         if(item.children.length > 0){
             treeItemIcon.appendChild(getIcon("right-triangle"));
@@ -72,8 +91,6 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         }
 
         treeItemSelf.addEventListener("click", (e)=>{ 
-            console.log('click');
-        
             treeItemSelf.toggleClass("is-collapsed", !treeItemSelf.hasClass("is-collapsed"));
             treeItemIcon.toggleClass("is-collapsed", !treeItemIcon.hasClass("is-collapsed"));
             if(treeItemSelf.hasClass("is-collapsed")){

@@ -5,7 +5,6 @@
 	"minAppVersion": "0.15.0",
 	"description": "Displays outgoing links in a hierarchy",
 	"author": "Jason Motylinski",
-	"authorUrl": "https://obsidian.md",
-	"fundingUrl": "https://obsidian.md/pricing",
+	"authorUrl": "https://jason.motylinski.com",
 	"isDesktopOnly": false
 }
