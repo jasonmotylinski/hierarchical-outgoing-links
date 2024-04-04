@@ -14,3 +14,8 @@ This is how the out-of-the-box core outgoing links plugin displays links:
 
 This is how this plugin displays links:
  ![image](docs/plugin.png)
+
+## Features
+- Collapsable tree structure allows you to easily focus on what what is most important
+- Clickable links to references
+- List of unresolved links indicating any dangling references which you might want to create.
