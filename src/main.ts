@@ -25,9 +25,9 @@ export default class HierarchicalOutgoingLinksPlugin extends Plugin {
 			leaf=leaves[0];
 		}else{
 			leaf=workspace.getRightLeaf(false);
-			await leaf.setViewState({type: VIEW_TYPE, active: true});
+			await leaf?.setViewState({type: VIEW_TYPE, active: true});
 		}
 
-		workspace.revealLeaf(leaf);
+		workspace.revealLeaf(leaf!);
 	}
 }

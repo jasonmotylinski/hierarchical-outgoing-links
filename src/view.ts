@@ -1,9 +1,14 @@
-import { ItemView, WorkspaceLeaf, App, getIcon } from "obsidian";
+import { ItemView, WorkspaceLeaf, getIcon } from "obsidian";
+import HierarchicalOutgoingLinksPlugin  from "./main";
+import { TreeNode } from "./types";
 
 export const VIEW_TYPE="hierarchical-outgoing-links-view";
 
+
 export class HierarchicalOutgoingLinksView extends ItemView {
-    constructor(leaf: WorkspaceLeaf, plugin: App){
+    private plugin :HierarchicalOutgoingLinksPlugin;
+
+    constructor(leaf: WorkspaceLeaf, plugin: HierarchicalOutgoingLinksPlugin){
         super(leaf);
         this.plugin=plugin;
     }
@@ -38,7 +43,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         }
     }
 
-    append_links(pane :HTMLDivElement, headerText :string, links){
+    append_links(pane :HTMLDivElement, headerText :string, links: any[]){
         const linksHeader=pane.createDiv({cls: "tree-item-self is-clickable"});
         linksHeader.createEl("div",{text: headerText});
         pane.appendChild(linksHeader);
@@ -48,7 +53,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         });
     }
 
-    append_child(parent, item){
+    append_child(parent :HTMLDivElement, item :TreeNode){
         const treeItem=parent.createDiv({cls: "tree-item"});
         const treeItemSelf=treeItem.createDiv({cls: "tree-item-self is-clickable outgoing-link-item"});
         const treeItemIcon=treeItemSelf.createDiv({cls: "tree-item-icon collapse-icon"});
@@ -60,10 +65,10 @@ export class HierarchicalOutgoingLinksView extends ItemView {
             
             if(firstLink){
                 name=firstLink.basename;
-                treeItemIcon.appendChild(getIcon("lucide-link"));
+                treeItemIcon.appendChild(getIcon("lucide-link")!);
             }
             else{
-                treeItemIcon.appendChild(getIcon("lucide-file-plus"));
+                treeItemIcon.appendChild(getIcon("lucide-file-plus")!);
             }
         }
         const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
@@ -78,13 +83,13 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         });
 
         if(item.children.length > 0){
-            treeItemIcon.appendChild(getIcon("right-triangle"));
+            treeItemIcon.appendChild(getIcon("right-triangle")!);
         }
 
         let text = "";
 
         if(item.children.length == 0){
-            text=item.count;
+            text=item.count.toString();
         }
         const treeItemFlairOuter=treeItemSelf.createDiv({cls:"tree-item-flair-outer"}).createEl("span",{cls: "tree-item-flair", text: text});
         const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
@@ -98,7 +103,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
             treeItemSelf.toggleClass("is-collapsed", !treeItemSelf.hasClass("is-collapsed"));
             treeItemIcon.toggleClass("is-collapsed", !treeItemIcon.hasClass("is-collapsed"));
             if(treeItemSelf.hasClass("is-collapsed")){
-                treeItemSelf.nextSibling.remove();
+                treeItemSelf.nextSibling!.remove();
             }
             else{
                 const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
@@ -112,11 +117,11 @@ export class HierarchicalOutgoingLinksView extends ItemView {
     };
 
 
-    create_hierarchy(paths){
-        let result = [];
+    create_hierarchy(paths :{ [key: string]: number }){
+        let result :any[] = [];
         let level = {result};
         for(const path in paths){
-            path.split('/').reduce((r, name, i, a) => {
+            path.split('/').reduce((r :any, name :string, i, a) => {
               if(!r[name]) {
                 r[name] = {result: []};
                 r.result.push({name, count: paths[path],children: r[name].result})
