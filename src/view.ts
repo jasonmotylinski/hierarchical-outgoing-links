@@ -74,14 +74,6 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
         const treeItemInner=treeItemSelf.createDiv({cls: "tree-item-inner", text: name});
 
-        treeItemInner.addEventListener('click', (e)=> {
-            const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
-            
-            if(firstLink){
-                this.app.workspace.openLinkText(firstLink.name, firstLink.path);
-            }
-        });
-
         if(item.children.length > 0){
             treeItemIcon.appendChild(getIcon("right-triangle")!);
         }
@@ -100,22 +92,40 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         }
 
         treeItemSelf.addEventListener("click", (e)=>{ 
-            treeItemSelf.toggleClass("is-collapsed", !treeItemSelf.hasClass("is-collapsed"));
-            treeItemIcon.toggleClass("is-collapsed", !treeItemIcon.hasClass("is-collapsed"));
-            if(treeItemSelf.hasClass("is-collapsed")){
-                treeItemSelf.nextSibling!.remove();
-            }
-            else{
-                const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
-                if(item.children.length > 0){
-                    item.children.forEach((c)=>{ 
-                        this.append_child(treeItemChildren, c);
-                    });
-                }
+            if(item.children.length==0){
+                // We are dealing with a leaf node so navigate to the leaf reference
+                this.navigateTo(item.name);
+            }else{
+                // We are dealing with a branch node so collapse/uncollapse
+                this.toggleBranch(item, treeItem, treeItemSelf, treeItemIcon);
+               
             }
         });
     };
 
+    navigateTo(name :string){
+        const firstLink=this.app.metadataCache.getFirstLinkpathDest(name, '');
+            
+        if(firstLink){
+            this.app.workspace.openLinkText(firstLink.name, firstLink.path);
+        }
+    }
+
+    toggleBranch(item :TreeNode, treeItem: HTMLDivElement, treeItemSelf :HTMLDivElement, treeItemIcon :HTMLDivElement){
+        treeItemSelf.toggleClass("is-collapsed", !treeItemSelf.hasClass("is-collapsed"));
+        treeItemIcon.toggleClass("is-collapsed", !treeItemIcon.hasClass("is-collapsed"));
+        if(treeItemSelf.hasClass("is-collapsed")){
+            treeItemSelf.nextSibling!.remove();
+        }
+        else{
+            const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
+            if(item.children.length > 0){
+                item.children.forEach((c)=>{ 
+                    this.append_child(treeItemChildren, c);
+                });
+            }
+        }
+    }
 
     create_hierarchy(paths :{ [key: string]: number }){
         let result :any[] = [];
