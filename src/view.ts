@@ -60,6 +60,10 @@ export class HierarchicalOutgoingLinksView extends ItemView {
             
             if(firstLink){
                 name=firstLink.basename;
+                treeItemIcon.appendChild(getIcon("lucide-link"));
+            }
+            else{
+                treeItemIcon.appendChild(getIcon("lucide-file-plus"));
             }
         }
         const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
