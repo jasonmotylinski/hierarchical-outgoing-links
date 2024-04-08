@@ -10,6 +10,14 @@ export default class HierarchicalOutgoingLinksPlugin extends Plugin {
 			(leaf) => new HierarchicalOutgoingLinksView(leaf, this)
 		);
 
+		this.addCommand({
+			id: "show-hierarchical-outgoing-links",
+			name: "Show hierarchical outgoing links",
+			callback: () => {
+			  this.activateView();
+			},
+		  });
+
 		this.activateView();
 	}
 
