@@ -19,3 +19,22 @@ This is how this plugin displays links:
 - Collapsable tree structure allows you to easily focus on what what is most important
 - Clickable links to references
 - List of unresolved links indicating any dangling references which you might want to create.
+
+## Commands
+The following commands are available in the Obsidian Command Palett:
+
+| Command | Description |
+|---------|-------------|
+| Show hierarchical outgoing links | Displays the panel in the event it was closed |
+
+## Development
+
+### Setup
+```bash
+npm install
+```
+
+### Running
+```bash
+npm run dev
+```
