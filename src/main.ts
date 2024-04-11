@@ -1,8 +1,6 @@
 import {  Plugin, WorkspaceLeaf } from 'obsidian';
 import {HierarchicalOutgoingLinksView, VIEW_TYPE} from "./view";
 
-// Remember to rename these classes and interfaces!
-
 export default class HierarchicalOutgoingLinksPlugin extends Plugin {
 	async onload() {
 		this.registerView(

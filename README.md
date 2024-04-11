@@ -1,7 +1,9 @@
 # Hierarchical Outgoing Links
 
 ## Overview
-Displays outgoing links for the active file as a hierarchy based on the folder structure of the references.
+Displays outgoing links for the active document as a hierarchy based on the folder structure of the references.
+
+ ![image](docs/plugin_example.png)
 
 ## Motivation
 In the age old folders vs tags debate I tend to lean heavier on physically structuring notes into high level categories. The tag hierarchy display provides a nice overview of tags and how they relate to each other and I wanted something similar that leveraged the folder structure to display outgoing links as a tree.

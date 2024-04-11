@@ -22,7 +22,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
     }
 
     getDisplayText(): string {
-        return "Hierarchical Outgoing Links View";
+        return "Display hierarchical outgoing links";
     }
 
     async initialize(){
@@ -39,7 +39,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
             const resolvedHierarchy=this.create_hierarchy(resolvedLinks);
             const unresolvedHierarchy=this.create_hierarchy(unresolvedLinks);
             this.append_links(pane, "Links", resolvedHierarchy);
-            this.append_links(pane, "Unresolved Links", unresolvedHierarchy);
+            this.append_links(pane, "Unresolved links", unresolvedHierarchy);
         }
     }
 
