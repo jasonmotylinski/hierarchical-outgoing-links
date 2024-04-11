@@ -22,7 +22,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
     }
 
     getDisplayText(): string {
-        return "Display hierarchical outgoing links";
+        return "Hierarchical outgoing links";
     }
 
     async initialize(){
