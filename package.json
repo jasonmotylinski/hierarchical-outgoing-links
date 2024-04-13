@@ -1,6 +1,6 @@
 {
 	"name": "hierarchical-outgoing-links-plugin",
-	"version": "1.0.0",
+	"version": "1.0.14",
 	"description": "Hierarchical outgoing links",
 	"main": "main.js",
 	"scripts": {
