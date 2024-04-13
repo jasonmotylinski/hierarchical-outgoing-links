@@ -1,8 +1,8 @@
 {
 	"id": "hierarchical-outgoing-links",
 	"name": "Hierarchical Outgoing Links",
-	"version": "1.0.14",
-	"minAppVersion": "1.15.2",
+	"version": "1.0.15",
+	"minAppVersion": "1.5.12",
 	"description": "Displays outgoing links in a hierarchy",
 	"author": "Jason Motylinski",
 	"authorUrl": "https://jason.motylinski.com",
