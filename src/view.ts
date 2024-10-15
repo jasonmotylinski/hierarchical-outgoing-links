@@ -71,9 +71,8 @@ export class HierarchicalOutgoingLinksView extends ItemView {
                 treeItemIcon.appendChild(getIcon("lucide-file-plus")!);
             }
         }
-        const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
-        const treeItemInner=treeItemSelf.createDiv({cls: "tree-item-inner", text: name});
 
+		treeItemSelf.createDiv({cls: "tree-item-inner", text: name});
         if(item.children.length > 0){
             treeItemIcon.appendChild(getIcon("right-triangle")!);
         }
@@ -83,7 +82,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         if(item.children.length == 0){
             text=item.count.toString();
         }
-        const treeItemFlairOuter=treeItemSelf.createDiv({cls:"tree-item-flair-outer"}).createEl("span",{cls: "tree-item-flair", text: text});
+        treeItemSelf.createDiv({cls:"tree-item-flair-outer"}).createEl("span",{cls: "tree-item-flair", text: text});
         const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
         if(item.children.length > 0){
             item.children.forEach((c)=>{ 
@@ -101,7 +100,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
                
             }
         });
-    };
+    }
 
     navigateTo(name :string){
         const firstLink=this.app.metadataCache.getFirstLinkpathDest(name, '');
@@ -128,8 +127,8 @@ export class HierarchicalOutgoingLinksView extends ItemView {
     }
 
     create_hierarchy(paths :{ [key: string]: number }){
-        let result :any[] = [];
-        let level = {result};
+        const result :any[] = [];
+        const level = {result};
         for(const path in paths){
             path.split('/').reduce((r :any, name :string, i, a) => {
               if(!r[name]) {
@@ -149,10 +148,6 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         }));
 
         this.plugin.registerEvent(this.app.workspace.on("layout-change", () => {
-            this.initialize();
-        }));
-
-        this.plugin.registerEvent(this.app.workspace.on("active-leaf-change", () => {
             this.initialize();
         }));
     }
