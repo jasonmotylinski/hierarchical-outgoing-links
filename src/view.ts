@@ -150,6 +150,10 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         this.plugin.registerEvent(this.app.workspace.on("layout-change", () => {
             this.initialize();
         }));
+
+        this.plugin.registerEvent(this.app.workspace.on("active-leaf-change", () => {
+            this.initialize();
+        }));
     }
 
     async onOpen(){
