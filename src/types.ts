@@ -4,6 +4,6 @@ export interface TreeNode {
     children: TreeNode[];
 }
 
-export interface ExamplePluginSettings {
-    dateFormat: string;
+export interface PluginSettings {
+    excludeFilesFilter: string|null;
   }

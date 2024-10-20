@@ -1,19 +1,24 @@
 import {  Plugin, WorkspaceLeaf } from 'obsidian';
 import {HierarchicalOutgoingLinksView, VIEW_TYPE} from "./view";
-import { ExamplePluginSettings } from './types';
+import { PluginSettings } from './types';
+import { SettingTab } from './SettingTab';
 
 export default class HierarchicalOutgoingLinksPlugin extends Plugin {
-    settings: ExamplePluginSettings;
-    DEFAULT_SETTINGS: Partial<ExamplePluginSettings> = {
-        dateFormat: 'YYYY-MM-DD',
-      };
-      
+    settings: PluginSettings;
+    DEFAULT_SETTINGS: Partial<PluginSettings> = {
+      excludeFilesFilter: null,
+    };
+    private view: HierarchicalOutgoingLinksView;
     async onload() {
         await this.loadSettings();
+        this.addSettingTab(new SettingTab(this.app, this));
 
         this.registerView(
             VIEW_TYPE,
-            (leaf) => new HierarchicalOutgoingLinksView(leaf, this)
+            (leaf) => {
+               this.view=new HierarchicalOutgoingLinksView(leaf, this);
+                return this.view;
+            }
         );
 
         this.addCommand({
@@ -32,11 +37,13 @@ export default class HierarchicalOutgoingLinksPlugin extends Plugin {
 
     async loadSettings() {
         this.settings = Object.assign({}, this.DEFAULT_SETTINGS, await this.loadData());
-      }
+    }
     
-      async saveSettings() {
+    async saveSettings() {
         await this.saveData(this.settings);
-      }
+        const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE);
+        this.view.initialize();
+    }
 
     async activateView(){
         const { workspace } = this.app;
