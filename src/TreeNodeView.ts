@@ -23,8 +23,13 @@ export class TreeNodeView{
         this.treeItemSelf=this.treeItem.createDiv({cls: "tree-item-self is-clickable backlink-item"});
 
         this.appendEndNode(this.treeItemSelf, this.treeNode);
+        
+        let text = "";
+        if(this.treeNode.children.length == 0){
+            text=this.treeNode.count.toString();
+        }
 
-        const treeItemFlair=this.treeItemSelf.createDiv({cls:"tree-item-flair-outer"}).createEl("span",{cls: "tree-item-flair"});
+        this.treeItemSelf.createDiv({cls:"tree-item-flair-outer"}).createEl("span",{cls: "tree-item-flair", text: text});
         if(this.treeNode.children.length > 0){
             this.appendTreeItemChildren(this.treeItem, this.treeNode.children);
             
@@ -47,16 +52,18 @@ export class TreeNodeView{
                 this.treeItemIcon.appendChild(getIcon("lucide-file-plus")!);
             }
         }
-
+        else{
+            this.treeItemIcon.appendChild(getIcon("right-triangle")!);
+        }
         const treeItemInner=parent.createDiv({cls: "tree-item-inner", text: name});
-        this.treeItemIcon.appendChild(getIcon("right-triangle")!);
+        treeItemInner.addEventListener("click", (e)=>{ 
+            this.navigateTo(treeNode.name);
+        });
 
         this.treeItemIcon.addEventListener("click", (e)=> {
             this.toggle();
         });
-        treeItemInner.addEventListener("click", (e)=>{ 
-            this.navigateTo(treeNode.name);
-        });
+
     }
 
     appendTreeItemChildren(treeItem:HTMLDivElement, children :TreeNode[]){

@@ -3,3 +3,7 @@ export interface TreeNode {
     count: number;
     children: TreeNode[];
 }
+
+export interface ExamplePluginSettings {
+    dateFormat: string;
+  }
