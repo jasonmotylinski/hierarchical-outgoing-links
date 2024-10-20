@@ -1,6 +1,5 @@
 import { ItemView, WorkspaceLeaf, getIcon } from "obsidian";
 import HierarchicalOutgoingLinksPlugin  from "./main";
-import { TreeNode } from "./types";
 import { TreeNodeView } from "./TreeNodeView";
 import { LinksHierarchy } from "./LinksHierarchy";
 
