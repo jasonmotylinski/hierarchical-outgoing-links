@@ -41,7 +41,6 @@ export default class HierarchicalOutgoingLinksPlugin extends Plugin {
     
     async saveSettings() {
         await this.saveData(this.settings);
-        const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE);
         this.view.initialize();
     }
 
