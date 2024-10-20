@@ -1,6 +1,8 @@
 import { ItemView, WorkspaceLeaf, getIcon } from "obsidian";
 import HierarchicalOutgoingLinksPlugin  from "./main";
 import { TreeNode } from "./types";
+import { TreeNodeView } from "./TreeNodeView";
+import { LinksHierarchy } from "./LinksHierarchy";
 
 export const VIEW_TYPE="hierarchical-outgoing-links-view";
 
@@ -36,10 +38,11 @@ export class HierarchicalOutgoingLinksView extends ItemView {
             const unresolvedLinks=this.app.metadataCache.unresolvedLinks[activeFile.path];
 
             const pane=container.createDiv({cls: "outgoing-link-pane"});
-            const resolvedHierarchy=this.create_hierarchy(resolvedLinks);
-            const unresolvedHierarchy=this.create_hierarchy(unresolvedLinks);
-            this.append_links(pane, "Links", resolvedHierarchy);
-            this.append_links(pane, "Unresolved links", unresolvedHierarchy);
+            const resolvedHierarchy=new LinksHierarchy(resolvedLinks);
+            const unresolvedHierarchy=new LinksHierarchy(unresolvedLinks);
+
+            this.append_links(pane, "Links", resolvedHierarchy.getHierarchy());
+            this.append_links(pane, "Unresolved links", unresolvedHierarchy.getHierarchy());
         }
     }
 
@@ -49,98 +52,9 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         pane.appendChild(linksHeader);
         const searchResultsContainer=pane.createDiv({cls: "search-result-container"});
         links.forEach((l) =>{
-            this.append_child(searchResultsContainer, l);
+            const treeNodeView=new TreeNodeView(this.app, searchResultsContainer, l);
+            treeNodeView.render();
         });
-    }
-
-    append_child(parent :HTMLDivElement, item :TreeNode){
-        const treeItem=parent.createDiv({cls: "tree-item"});
-        const treeItemSelf=treeItem.createDiv({cls: "tree-item-self is-clickable outgoing-link-item"});
-        const treeItemIcon=treeItemSelf.createDiv({cls: "tree-item-icon collapse-icon"});
-
-        let name = item.name;
-
-        if(item.children && item.children.length == 0){
-            const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
-            
-            if(firstLink){
-                name=firstLink.basename;
-                treeItemIcon.appendChild(getIcon("lucide-link")!);
-            }
-            else{
-                treeItemIcon.appendChild(getIcon("lucide-file-plus")!);
-            }
-        }
-        const firstLink=this.app.metadataCache.getFirstLinkpathDest(item.name, '');
-        const treeItemInner=treeItemSelf.createDiv({cls: "tree-item-inner", text: name});
-
-        if(item.children.length > 0){
-            treeItemIcon.appendChild(getIcon("right-triangle")!);
-        }
-
-        let text = "";
-
-        if(item.children.length == 0){
-            text=item.count.toString();
-        }
-        const treeItemFlairOuter=treeItemSelf.createDiv({cls:"tree-item-flair-outer"}).createEl("span",{cls: "tree-item-flair", text: text});
-        const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
-        if(item.children.length > 0){
-            item.children.forEach((c)=>{ 
-                this.append_child(treeItemChildren, c);
-            });
-        }
-
-        treeItemSelf.addEventListener("click", (e)=>{ 
-            if(item.children.length==0){
-                // We are dealing with a leaf node so navigate to the leaf reference
-                this.navigateTo(item.name);
-            }else{
-                // We are dealing with a branch node so collapse/uncollapse
-                this.toggleBranch(item, treeItem, treeItemSelf, treeItemIcon);
-               
-            }
-        });
-    };
-
-    navigateTo(name :string){
-        const firstLink=this.app.metadataCache.getFirstLinkpathDest(name, '');
-            
-        if(firstLink){
-            this.app.workspace.openLinkText(firstLink.name, firstLink.path);
-        }
-    }
-
-    toggleBranch(item :TreeNode, treeItem: HTMLDivElement, treeItemSelf :HTMLDivElement, treeItemIcon :HTMLDivElement){
-        treeItemSelf.toggleClass("is-collapsed", !treeItemSelf.hasClass("is-collapsed"));
-        treeItemIcon.toggleClass("is-collapsed", !treeItemIcon.hasClass("is-collapsed"));
-        if(treeItemSelf.hasClass("is-collapsed")){
-            treeItemSelf.nextSibling!.remove();
-        }
-        else{
-            const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
-            if(item.children.length > 0){
-                item.children.forEach((c)=>{ 
-                    this.append_child(treeItemChildren, c);
-                });
-            }
-        }
-    }
-
-    create_hierarchy(paths :{ [key: string]: number }){
-        let result :any[] = [];
-        let level = {result};
-        for(const path in paths){
-            path.split('/').reduce((r :any, name :string, i, a) => {
-              if(!r[name]) {
-                r[name] = {result: []};
-                r.result.push({name, count: paths[path],children: r[name].result})
-              }
-              
-              return r[name];
-            }, level)
-          }
-        return result;
     }
 
     register_events(){
