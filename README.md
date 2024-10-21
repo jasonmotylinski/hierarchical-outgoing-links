@@ -1,5 +1,13 @@
 # Hierarchical Outgoing Links
 
+[![GitHub manifest version](https://img.shields.io/github/manifest-json/v/jasonmotylinski/hierarchical-outgoing-links)](../../releases)
+[![GitHub last commit](https://img.shields.io/github/last-commit/jasonmotylinski/hierarchical-outgoing-links)](../../commits/main/)
+[![GitHub Open Issues](https://img.shields.io/github/issues/jasonmotylinski/hierarchical-outgoing-links)](../../issues)
+[![GitHub Closed Issues](https://img.shields.io/github/issues-closed/jasonmotylinski/hierarchical-outgoing-links)](../../issues?q=is%3Aissue+is%3Aclosed)
+[![GitHub License](https://img.shields.io/github/license/jasonmotylinski/hierarchical-outgoing-links)](/LICENSE)
+[![Obsidian Downloads](https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Fobsidianmd%2Fobsidian-releases%2Fmaster%2Fcommunity-plugin-stats.json&query=%24%5B%22hierarchical-outgoing-links%22%5D.downloads&logo=obsidian&logoColor=a88bfa&label=downloads&color=a88bfa)](https://obsidian.md/plugins?id=hierarchical-outgoing-links)
+
+
 ## Overview
 Displays outgoing links for the active document as a hierarchy based on the folder structure of the references.
 
