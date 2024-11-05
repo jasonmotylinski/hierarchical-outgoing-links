@@ -4,7 +4,7 @@ import { TreeNodeView } from "./TreeNodeView";
 import { LinksHierarchy } from "./LinksHierarchy";
 import { NavButtonsView } from "./nav/navButtonsView";
 
-export const VIEW_TYPE="hierarchical-outgoing-links-view";
+export const VIEW_TYPE="hierarchical-outgoing-links";
 
 
 export class HierarchicalOutgoingLinksView extends ItemView {
