@@ -4,6 +4,7 @@ import { TreeNode } from "./types";
 export class TreeNodeView{
     private app: App;
     private isCollapsed: boolean;
+	private canToggleIcon: boolean=true;
     private parent: HTMLDivElement;
     private treeItem: HTMLDivElement;
     private treeItemSelf: HTMLDivElement;
@@ -50,6 +51,7 @@ export class TreeNodeView{
             }
             else{
                 this.treeItemIcon.appendChild(getIcon("lucide-file-plus")!);
+				this.canToggleIcon=false;
             }
         }
         else{
@@ -97,8 +99,9 @@ export class TreeNodeView{
     
     toggleOff(){
         this.treeItemSelf.toggleClass("is-collapsed", true);
-        this.treeItemIcon.toggleClass("is-collapsed", true);
-
+		if(this.canToggleIcon){
+        	this.treeItemIcon.toggleClass("is-collapsed", true);
+		}
         if(this.treeItemSelf.nextSibling){
             const nextDiv = this.treeItemSelf.nextSibling as HTMLDivElement;
             nextDiv.style.display="none";
