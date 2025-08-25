@@ -45,6 +45,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
 	createPane(container :Element, resolvedLinks: Record<string, number>, unresolvedLinks: Record<string, number>){
 		const navButtonsView=new NavButtonsView(this.app, this.plugin.settings, container);
 		navButtonsView.render();
+        
         navButtonsView.collapseButton.on("collapse-click", (e)=> {
             if(navButtonsView.collapseButton.isCollapsed()){
                 this.treeNodeViews.forEach((n)=>{
