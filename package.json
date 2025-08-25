@@ -20,5 +20,8 @@
 		"obsidian": "latest",
 		"tslib": "2.8.0",
 		"typescript": "5.6.3"
+	},
+	"dependencies": {
+		"hierarchical-common": "github:jasonmotylinski/hierarchical-common"
 	}
 }

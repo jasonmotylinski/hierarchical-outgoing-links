@@ -1,7 +1,7 @@
 import { App } from "obsidian";
 import { FilterButton } from "./filterButton";
 import { PluginSettings } from "src/types";
-import { CollapseButton } from "./collapseButton";
+import { CollapseButton } from "hierarchical-common";
 
 export class NavButtonsView {
     private app;

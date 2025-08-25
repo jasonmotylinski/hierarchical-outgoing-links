@@ -1,5 +1,5 @@
 import { App, getIcon } from "obsidian";
-import { TreeNode } from "./types";
+import { TreeNode } from "hierarchical-common";
 
 export class TreeNodeView{
     private app: App;
