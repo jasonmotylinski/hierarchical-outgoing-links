@@ -1,4 +1,4 @@
-import { PluginSettings } from "./types";
+import { PluginSettings, TreeNode } from "./types";
 
 export class LinksHierarchy{
     private links: Record<string, number>;
@@ -28,17 +28,21 @@ export class LinksHierarchy{
         return this.links;
       }
     }
-    getHierarchy(){
-        let result :any[] = [];
-        let level = {result};
+    getHierarchy(): TreeNode[] {
+        // Accumulator type for building the tree hierarchy
+        type LevelAccumulator = { result: TreeNode[]; [key: string]: LevelAccumulator | TreeNode[] };
+
+        const result: TreeNode[] = [];
+        const level: LevelAccumulator = { result };
         for(const path in this.getFilteredLinks()){
-            path.split('/').reduce((r :any, name :string, i, a) => {
+            path.split('/').reduce((r: LevelAccumulator, name: string) => {
               if(!r[name]) {
                 r[name] = {result: []};
-                r.result.push({name, count: this.links[path],children: r[name].result})
+                const child = r[name] as LevelAccumulator;
+                r.result.push({name, count: this.links[path], children: child.result})
               }
-              
-              return r[name];
+
+              return r[name] as LevelAccumulator;
             }, level)
           }
         return result;

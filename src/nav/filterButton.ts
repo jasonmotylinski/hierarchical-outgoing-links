@@ -14,9 +14,12 @@ export class FilterButton {
         clickableIcon.appendChild(getIcon("filter")!);
         clickableIcon.addClass("is-active");
         clickableIcon.onClickEvent((e)=>{
-            // @ts-ignore - this.app.setting is available in the JS API, not TS for some reason. Property exists on App 
-            this.app.setting.open(); 
-            // @ts-ignore - this.app.setting is available in the JS API, not TS for some reason. Property exists on App 
+            // Obsidian's `app.setting` is an internal API not exposed in the public TypeScript
+            // definitions, but it exists at runtime and is commonly used by plugins to
+            // programmatically open the settings modal and navigate to a specific tab.
+            // @ts-ignore
+            this.app.setting.open();
+            // @ts-ignore
             this.app.setting.openTabById('hierarchical-outgoing-links');
         });
     }

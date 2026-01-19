@@ -3,6 +3,7 @@ import HierarchicalOutgoingLinksPlugin  from "./main";
 import { TreeNodeView } from "./TreeNodeView";
 import { LinksHierarchy } from "./LinksHierarchy";
 import { NavButtonsView } from "./nav/navButtonsView";
+import { TreeNode } from "./types";
 
 export const VIEW_TYPE="hierarchical-outgoing-links";
 
@@ -63,11 +64,11 @@ export class HierarchicalOutgoingLinksView extends ItemView {
 		const resolvedHierarchy=new LinksHierarchy(resolvedLinks, this.plugin.settings);
 		const unresolvedHierarchy=new LinksHierarchy(unresolvedLinks, this.plugin.settings);
 
-		this.append_links(pane, "Links", resolvedHierarchy.getHierarchy());
-		this.append_links(pane, "Unresolved links", unresolvedHierarchy.getHierarchy());
+		this.appendLinks(pane, "Links", resolvedHierarchy.getHierarchy());
+		this.appendLinks(pane, "Unresolved links", unresolvedHierarchy.getHierarchy());
 	}
 
-    append_links(pane :HTMLDivElement, headerText :string, links: any[]){
+    appendLinks(pane: HTMLDivElement, headerText: string, links: TreeNode[]){
         const linksHeader=pane.createDiv({cls: "tree-item-self is-clickable"});
         linksHeader.createEl("div",{text: headerText});
         pane.appendChild(linksHeader);
@@ -79,7 +80,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         });
     }
 
-    register_events(){
+    registerEvents(){
         this.plugin.registerEvent(this.app.metadataCache.on("changed", () => {
             this.initialize();
         }));
@@ -94,7 +95,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
     }
 
     async onOpen(){
-        this.register_events();
+        this.registerEvents();
         return this.initialize();
     }
 }
