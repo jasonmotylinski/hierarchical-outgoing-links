@@ -8,7 +8,19 @@
 # Hierarchical Outgoing Links
 
 ## Overview
-Displays outgoing links for the active document as a hierarchy based on the folder structure of the references.
+Displays outgoing links for the active document as a hierarchy based on the **folder structure** of the references.
+
+Rather than showing a flat list of outgoing links, this plugin groups them into a collapsible tree that mirrors how your notes are organized into folders within your vault. For example, if a note links to `recipes/breakfast/pancakes` and `recipes/dinner/pasta`, the tree would look like:
+
+```
+recipes/
+├── breakfast/
+│   └── pancakes
+└── dinner/
+    └── pasta
+```
+
+The categories you see in the tree (e.g., "recipes", "breakfast", "dinner") are your vault's **folder names**, not tags or auto-generated labels.
 
  ![image](docs/plugin_example.png)
 
