@@ -1,4 +1,4 @@
-import { ItemView, WorkspaceLeaf } from "obsidian";
+import { ItemView, WorkspaceLeaf, debounce } from "obsidian";
 import HierarchicalOutgoingLinksPlugin  from "./main";
 import { TreeNodeView } from "./TreeNodeView";
 import { LinksHierarchy } from "./LinksHierarchy";
@@ -30,7 +30,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
     }
 
     async initialize(){
-
+        this.treeNodeViews=[];
         const container=this.containerEl.children[1];
         container.empty();
         const activeFile=this.app.workspace.getActiveFile();
@@ -80,17 +80,21 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         });
     }
 
+    debouncedInitialize = debounce(() => {
+        this.initialize();
+    }, 50, true);
+
     registerEvents(){
         this.plugin.registerEvent(this.app.metadataCache.on("changed", () => {
-            this.initialize();
+            this.debouncedInitialize();
         }));
 
         this.plugin.registerEvent(this.app.workspace.on("layout-change", () => {
-            this.initialize();
+            this.debouncedInitialize();
         }));
 
         this.plugin.registerEvent(this.app.workspace.on("file-open", () => {
-            this.initialize();
+            this.debouncedInitialize();
         }));
     }
 
