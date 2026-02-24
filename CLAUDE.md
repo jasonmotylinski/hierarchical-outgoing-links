@@ -12,6 +12,22 @@ This is an Obsidian plugin that displays outgoing links from the active note as 
 - `npm run dev` - Development build with watch mode (outputs to main.js)
 - `npm run build` - Production build with TypeScript type checking
 
+## Cutting a Release
+
+1. **Bump the version** — runs `version-bump.mjs`, which updates `manifest.json` and `versions.json`, then stages both files and creates a git commit + tag:
+   ```
+   npm version <new-version>   # e.g. npm version 1.2.2
+   ```
+
+2. **Push the commit and tag** to GitHub:
+   ```
+   git push && git push --tags
+   ```
+
+3. **GitHub Actions** (`.github/workflows/release.yml`) triggers on the tag push, builds the plugin, and creates a **draft** GitHub release containing `main.js`, `manifest.json`, and `styles.css`.
+
+4. **Publish the draft release** at `https://github.com/jasonmotylinski/hierarchical-outgoing-links/releases` — review and click "Publish release".
+
 ## Architecture
 
 The plugin follows Obsidian's plugin architecture with a main entry point that registers a custom view.
