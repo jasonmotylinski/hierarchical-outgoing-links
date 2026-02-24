@@ -1,4 +1,4 @@
-import { App, getIcon } from "obsidian";
+import { App, getIcon, MarkdownView } from "obsidian";
 import { TreeNode } from "./types";
 
 export class TreeNodeView{
@@ -30,7 +30,16 @@ export class TreeNodeView{
             text=this.treeNode.count.toString();
         }
 
-        this.treeItemSelf.createDiv({cls:"tree-item-flair-outer"}).createEl("span",{cls: "tree-item-flair", text: text});
+        const treeItemFlairOuter = this.treeItemSelf.createDiv({cls:"tree-item-flair-outer"});
+        treeItemFlairOuter.createEl("span",{cls: "tree-item-flair", text: text});
+        if(this.treeNode.children.length == 0){
+            treeItemFlairOuter.title = "Jump to link in current note";
+            treeItemFlairOuter.style.cursor = "pointer";
+            treeItemFlairOuter.addEventListener("click", (e) => {
+                e.stopPropagation();
+                this.jumpToLink(this.treeNode.name);
+            });
+        }
         if(this.treeNode.children.length > 0){
             this.appendTreeItemChildren(this.treeItem, this.treeNode.children);
             
@@ -80,10 +89,35 @@ export class TreeNodeView{
 
     navigateTo(name :string){
         const firstLink=this.app.metadataCache.getFirstLinkpathDest(name, '');
-            
+
         if(firstLink){
             this.app.workspace.openLinkText(firstLink.name, firstLink.path);
         }
+    }
+
+    jumpToLink(name: string){
+        const activeFile=this.app.workspace.getActiveFile();
+        if(!activeFile) return;
+
+        const targetFile=this.app.metadataCache.getFirstLinkpathDest(name, '');
+        if(!targetFile) return;
+
+        const fileCache=this.app.metadataCache.getFileCache(activeFile);
+        if(!fileCache?.links) return;
+
+        const linkCache=fileCache.links.find((lc) => {
+            const dest=this.app.metadataCache.getFirstLinkpathDest(lc.link, activeFile.path);
+            return dest?.path === targetFile.path;
+        });
+        if(!linkCache) return;
+
+        const markdownView=this.app.workspace.getActiveViewOfType(MarkdownView);
+        if(!markdownView) return;
+
+        const editor=markdownView.editor;
+        const pos=linkCache.position.start;
+        editor.setCursor({ line: pos.line, ch: pos.col });
+        editor.scrollIntoView({ from: { line: pos.line, ch: pos.col }, to: { line: pos.line, ch: pos.col } }, true);
     }
 
     toggleOn(){
