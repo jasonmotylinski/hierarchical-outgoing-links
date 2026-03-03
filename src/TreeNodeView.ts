@@ -1,10 +1,10 @@
 import { App, getIcon, MarkdownView } from "obsidian";
 import { TreeNode } from "./types";
 
-export class TreeNodeView{
+export class TreeNodeView {
     private app: App;
     private isCollapsed: boolean;
-	private canToggleIcon: boolean=true;
+    private canToggleIcon: boolean = true;
     private parent: HTMLDivElement;
     private treeItem: HTMLDivElement;
     private treeItemSelf: HTMLDivElement;
@@ -12,144 +12,148 @@ export class TreeNodeView{
     private treeNode: TreeNode;
     private treeNodeViewChildren: TreeNodeView[];
     constructor(app: App, parent: HTMLDivElement, treeNode: TreeNode) {
-        this.app=app;
-        this.isCollapsed=false;
-        this.parent=parent;
-        this.treeNode=treeNode;
-        this.treeNodeViewChildren=[];
+        this.app = app;
+        this.isCollapsed = false;
+        this.parent = parent;
+        this.treeNode = treeNode;
+        this.treeNodeViewChildren = [];
     }
 
-    render(){
-        this.treeItem=this.parent.createDiv({cls: "tree-item"});
-        this.treeItemSelf=this.treeItem.createDiv({cls: "tree-item-self is-clickable backlink-item"});
-
-        this.appendEndNode(this.treeItemSelf, this.treeNode);
-        
-        let text = "";
-        if(this.treeNode.children.length == 0){
-            text=this.treeNode.count.toString();
-        }
-
-        const treeItemFlairOuter = this.treeItemSelf.createDiv({cls:"tree-item-flair-outer"});
-        treeItemFlairOuter.createEl("span",{cls: "tree-item-flair", text: text});
-        if(this.treeNode.children.length == 0){
-            treeItemFlairOuter.title = "Jump to link in current note";
-            treeItemFlairOuter.style.cursor = "pointer";
-            treeItemFlairOuter.addEventListener("click", (e) => {
+    render() {
+        this.treeItem = this.parent.createDiv({ cls: "tree-item" });
+        this.treeItemSelf = this.treeItem.createDiv({ cls: "tree-item-self is-clickable backlink-item" });
+        if (this.treeNode.children.length === 0) {
+            this.treeItemSelf.addEventListener("click", (e) => {
                 e.stopPropagation();
                 this.jumpToLink(this.treeNode.name);
             });
         }
-        if(this.treeNode.children.length > 0){
+
+        this.appendEndNode(this.treeItemSelf, this.treeNode);
+
+        let text = "";
+        if (this.treeNode.children.length == 0) {
+            text = this.treeNode.count.toString();
+        }
+
+        const treeItemFlairOuter = this.treeItemSelf.createDiv({ cls: "tree-item-flair-outer" });
+        treeItemFlairOuter.createEl("span", { cls: "tree-item-flair", text: text });
+        if (this.treeNode.children.length == 0) {
+            treeItemFlairOuter.title = "Jump to link in current note";
+            treeItemFlairOuter.style.cursor = "pointer";
+        }
+        if (this.treeNode.children.length > 0) {
             this.appendTreeItemChildren(this.treeItem, this.treeNode.children);
-            
+
         }
     }
 
-    appendEndNode(parent :HTMLDivElement, treeNode :TreeNode){
-        this.treeItemIcon=parent.createDiv({cls: "tree-item-icon collapse-icon"});
+    appendEndNode(parent: HTMLDivElement, treeNode: TreeNode) {
+        this.treeItemIcon = parent.createDiv({ cls: "tree-item-icon collapse-icon" });
 
         let name = treeNode.name;
-        if(treeNode.children && treeNode.children.length == 0){
-            const firstLink=this.app.metadataCache.getFirstLinkpathDest(treeNode.name, '');
-            
-            if(firstLink){
-                name=firstLink.basename;
+        if (treeNode.children && treeNode.children.length == 0) {
+            const firstLink = this.app.metadataCache.getFirstLinkpathDest(treeNode.name, '');
+
+            if (firstLink) {
+                name = firstLink.basename;
                 this.treeItemIcon.appendChild(getIcon("lucide-link")!);
 
             }
-            else{
+            else {
                 this.treeItemIcon.appendChild(getIcon("lucide-file-plus")!);
-				this.canToggleIcon=false;
+                this.canToggleIcon = false;
             }
         }
-        else{
+        else {
             this.treeItemIcon.appendChild(getIcon("right-triangle")!);
         }
-        const treeItemInner=parent.createDiv({cls: "tree-item-inner", text: name});
-        treeItemInner.addEventListener("click", (e)=>{ 
+        const treeItemInner = parent.createDiv({ cls: "tree-item-inner", text: name });
+        treeItemInner.addEventListener("click", (e) => {
             this.navigateTo(treeNode.name);
         });
 
-        this.treeItemIcon.addEventListener("click", (e)=> {
+        this.treeItemIcon.addEventListener("click", (e) => {
             this.toggle();
         });
 
     }
 
-    appendTreeItemChildren(treeItem:HTMLDivElement, children :TreeNode[]){
-        const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
-        children.forEach((c)=>{ 
-            const treeNodeView=new TreeNodeView(this.app, treeItemChildren, c);
+    appendTreeItemChildren(treeItem: HTMLDivElement, children: TreeNode[]) {
+        const treeItemChildren = treeItem.createDiv({ cls: "tree-item-children" });
+        children.forEach((c) => {
+            const treeNodeView = new TreeNodeView(this.app, treeItemChildren, c);
             treeNodeView.render();
             this.treeNodeViewChildren.push(treeNodeView);
         });
 
     }
 
-    navigateTo(name :string){
-        const firstLink=this.app.metadataCache.getFirstLinkpathDest(name, '');
+    navigateTo(name: string) {
+        const firstLink = this.app.metadataCache.getFirstLinkpathDest(name, '');
 
-        if(firstLink){
+        if (firstLink) {
             this.app.workspace.openLinkText(firstLink.name, firstLink.path);
         }
     }
 
-    jumpToLink(name: string){
-        const activeFile=this.app.workspace.getActiveFile();
-        if(!activeFile) return;
+    jumpToLink(name: string) {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (!activeFile) return;
 
-        const targetFile=this.app.metadataCache.getFirstLinkpathDest(name, '');
-        if(!targetFile) return;
+        const targetFile = this.app.metadataCache.getFirstLinkpathDest(name, '');
+        if (!targetFile) return;
 
-        const fileCache=this.app.metadataCache.getFileCache(activeFile);
-        if(!fileCache?.links) return;
+        const fileCache = this.app.metadataCache.getFileCache(activeFile);
+        if (!fileCache?.links) return;
 
-        const linkCache=fileCache.links.find((lc) => {
-            const dest=this.app.metadataCache.getFirstLinkpathDest(lc.link, activeFile.path);
+        const linkCache = fileCache.links.find((lc) => {
+            const dest = this.app.metadataCache.getFirstLinkpathDest(lc.link, activeFile.path);
             return dest?.path === targetFile.path;
         });
-        if(!linkCache) return;
+        if (!linkCache) return;
 
-        const markdownView=this.app.workspace.getActiveViewOfType(MarkdownView);
-        if(!markdownView) return;
+        const markdownLeaves = this.app.workspace.getLeavesOfType("markdown");
+        const markdownView = markdownLeaves.length > 0 ? markdownLeaves[0].view as MarkdownView : null;
 
-        const editor=markdownView.editor;
-        const pos=linkCache.position.start;
+        if (!markdownView) return;
+
+        const editor = markdownView.editor;
+        const pos = linkCache.position.start;
         editor.setCursor({ line: pos.line, ch: pos.col });
         editor.scrollIntoView({ from: { line: pos.line, ch: pos.col }, to: { line: pos.line, ch: pos.col } }, true);
     }
 
-    toggleOn(){
+    toggleOn() {
         this.treeItemSelf.toggleClass("is-collapsed", false);
         this.treeItemIcon.toggleClass("is-collapsed", false);
-        if(this.treeItemSelf.nextSibling){
+        if (this.treeItemSelf.nextSibling) {
             const nextDiv = this.treeItemSelf.nextSibling as HTMLDivElement;
-            nextDiv.style.display="block";
+            nextDiv.style.display = "block";
         }
 
-        this.treeNodeViewChildren.forEach((c)=>{c.toggleOn()});
+        this.treeNodeViewChildren.forEach((c) => { c.toggleOn() });
     }
-    
-    toggleOff(){
+
+    toggleOff() {
         this.treeItemSelf.toggleClass("is-collapsed", true);
-		if(this.canToggleIcon){
-        	this.treeItemIcon.toggleClass("is-collapsed", true);
-		}
-        if(this.treeItemSelf.nextSibling){
+        if (this.canToggleIcon) {
+            this.treeItemIcon.toggleClass("is-collapsed", true);
+        }
+        if (this.treeItemSelf.nextSibling) {
             const nextDiv = this.treeItemSelf.nextSibling as HTMLDivElement;
-            nextDiv.style.display="none";
+            nextDiv.style.display = "none";
         }
 
-        this.treeNodeViewChildren.forEach((c)=>{c.toggleOff()});
+        this.treeNodeViewChildren.forEach((c) => { c.toggleOff() });
     }
 
-    toggle(){
-        if(this.isCollapsed){
-            this.isCollapsed=false;
+    toggle() {
+        if (this.isCollapsed) {
+            this.isCollapsed = false;
             this.toggleOff();
-        }else{
-            this.isCollapsed=true;
+        } else {
+            this.isCollapsed = true;
             this.toggleOn();
         }
     }
