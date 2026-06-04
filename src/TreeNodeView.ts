@@ -1,10 +1,12 @@
-import { App, getIcon, MarkdownView } from "obsidian";
+import { App, getIcon } from "obsidian";
 import { TreeNode } from "./types";
+import { findLinkPosition, findMarkdownViewForFile, scrollToLink } from "./linkLocation";
 
 export class TreeNodeView{
     private app: App;
     private isCollapsed: boolean;
 	private canToggleIcon: boolean=true;
+	private isResolvedLink: boolean=false;
     private parent: HTMLDivElement;
     private treeItem: HTMLDivElement;
     private treeItemSelf: HTMLDivElement;
@@ -32,11 +34,14 @@ export class TreeNodeView{
 
         const treeItemFlairOuter = this.treeItemSelf.createDiv({cls:"tree-item-flair-outer"});
         treeItemFlairOuter.createEl("span",{cls: "tree-item-flair", text: text});
-        if(this.treeNode.children.length == 0){
-            treeItemFlairOuter.title = "Jump to link in current note";
-            treeItemFlairOuter.style.cursor = "pointer";
-            treeItemFlairOuter.addEventListener("click", (e) => {
-                e.stopPropagation();
+        if(this.treeNode.children.length == 0 && this.isResolvedLink){
+            // Clicking the blank area of the row (everything except the note name)
+            // jumps to the link's location in the active note. See issue #119/#120.
+            // Only resolved links can be jumped to, so don't advertise the
+            // affordance on unresolved rows.
+            this.treeItemSelf.title = "Jump to link in current note";
+            this.treeItemSelf.style.cursor = "pointer";
+            this.treeItemSelf.addEventListener("click", () => {
                 this.jumpToLink(this.treeNode.name);
             });
         }
@@ -56,7 +61,7 @@ export class TreeNodeView{
             if(firstLink){
                 name=firstLink.basename;
                 this.treeItemIcon.appendChild(getIcon("lucide-link")!);
-
+                this.isResolvedLink=true;
             }
             else{
                 this.treeItemIcon.appendChild(getIcon("lucide-file-plus")!);
@@ -67,12 +72,22 @@ export class TreeNodeView{
             this.treeItemIcon.appendChild(getIcon("right-triangle")!);
         }
         const treeItemInner=parent.createDiv({cls: "tree-item-inner", text: name});
-        treeItemInner.addEventListener("click", (e)=>{ 
+        treeItemInner.addEventListener("click", (e)=>{
+            // Clicking the note name opens the target note; stop the event from
+            // bubbling to the row handler that jumps to the link instead.
+            e.stopPropagation();
             this.navigateTo(treeNode.name);
         });
 
         this.treeItemIcon.addEventListener("click", (e)=> {
-            this.toggle();
+            if(treeNode.children.length == 0){
+                // Leaf icon opens the target note (matching the note name) per the
+                // #119 spec; stop it from bubbling to the row's jump handler.
+                e.stopPropagation();
+                this.navigateTo(treeNode.name);
+            }else{
+                this.toggle();
+            }
         });
 
     }
@@ -99,25 +114,13 @@ export class TreeNodeView{
         const activeFile=this.app.workspace.getActiveFile();
         if(!activeFile) return;
 
-        const targetFile=this.app.metadataCache.getFirstLinkpathDest(name, '');
-        if(!targetFile) return;
+        const location=findLinkPosition(this.app, activeFile, name);
+        if(!location) return;
 
-        const fileCache=this.app.metadataCache.getFileCache(activeFile);
-        if(!fileCache?.links) return;
-
-        const linkCache=fileCache.links.find((lc) => {
-            const dest=this.app.metadataCache.getFirstLinkpathDest(lc.link, activeFile.path);
-            return dest?.path === targetFile.path;
-        });
-        if(!linkCache) return;
-
-        const markdownView=this.app.workspace.getActiveViewOfType(MarkdownView);
+        const markdownView=findMarkdownViewForFile(this.app, activeFile);
         if(!markdownView) return;
 
-        const editor=markdownView.editor;
-        const pos=linkCache.position.start;
-        editor.setCursor({ line: pos.line, ch: pos.col });
-        editor.scrollIntoView({ from: { line: pos.line, ch: pos.col }, to: { line: pos.line, ch: pos.col } }, true);
+        scrollToLink(markdownView, location);
     }
 
     toggleOn(){
