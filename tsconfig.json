@@ -1,6 +1,7 @@
 {
   "compilerOptions": {
     "baseUrl": ".",
+    "ignoreDeprecations": "6.0",
     "inlineSourceMap": true,
     "inlineSources": true,
     "module": "ESNext",
@@ -11,6 +12,7 @@
     "importHelpers": true,
     "isolatedModules": true,
 	"strictNullChecks": true,
+	"strictPropertyInitialization": false,
     "lib": [
       "DOM",
       "ES5",
