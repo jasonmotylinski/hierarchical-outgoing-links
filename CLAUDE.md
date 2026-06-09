@@ -59,6 +59,7 @@ The plugin follows Obsidian's plugin architecture with a main entry point that r
 - `src/LinksHierarchy.ts` - Transforms flat link paths into a nested tree structure by splitting paths on `/`. Also applies regex-based filtering from settings.
 - `src/TreeNodeView.ts` - Recursive component that renders each node in the tree. Handles expand/collapse state, navigation to linked files (click the name/icon), and jump-to-link in the active note (click the row's blank area).
 - `src/linkLocation.ts` - Pure-ish helpers for the jump-to-link feature: locating an outgoing link's position in the active note, finding the `MarkdownView` showing a file, and scrolling to a line in both editing and reading modes. Kept free of DOM so it can be unit tested.
+- `src/superchargedAttributes.ts` - Supercharged Links interop. When the opt-in setting is on, `TreeNodeView` decorates each resolved leaf's `.tree-item-inner` with `data-link-*` attributes (and `--data-link-*` CSS vars) derived from the target note's frontmatter and tags, so existing Supercharged Links CSS snippets style the rows with no dependency on the SL plugin. Pure functions taking a `CachedMetadata`/source object so they're unit-testable.
 - `src/types.ts` - TypeScript interfaces for `TreeNode` and `PluginSettings`.
 - `src/SettingTab.ts` - Settings UI for the exclude files filter.
 

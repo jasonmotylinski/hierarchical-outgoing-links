@@ -74,7 +74,7 @@ export class HierarchicalOutgoingLinksView extends ItemView {
         pane.appendChild(linksHeader);
         const searchResultsContainer=pane.createDiv({cls: "search-result-container"});
         links.forEach((l) =>{
-            const treeNodeView=new TreeNodeView(this.app, searchResultsContainer, l);
+            const treeNodeView=new TreeNodeView(this.app, searchResultsContainer, l, this.plugin.settings);
             treeNodeView.render();
 			this.treeNodeViews.push(treeNodeView);
         });

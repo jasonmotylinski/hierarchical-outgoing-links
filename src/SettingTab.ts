@@ -47,7 +47,19 @@ export class SettingTab extends PluginSettingTab {
             });
         });
 
-  
+      new Setting(containerEl).setName("Styling").setHeading();
+
+      new Setting(containerEl)
+        .setName("Supercharged Links attributes")
+        .setDesc("Add Supercharged Links-style data-link-* attributes (from each target note's frontmatter and tags) to resolved link rows, so your existing Supercharged Links CSS snippets color them. No dependency on the Supercharged Links plugin.")
+        .addToggle((toggle) =>{
+          toggle
+            .setValue(this.plugin.settings.superchargedLinks)
+            .onChange(async (value) => {
+              this.plugin.settings.superchargedLinks = value;
+              await this.plugin.saveSettings();
+            });
+        });
 
     }
     async setExcludeFilterValue(filterText: TextComponent, val: string){

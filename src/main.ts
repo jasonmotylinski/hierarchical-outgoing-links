@@ -7,6 +7,7 @@ export default class HierarchicalOutgoingLinksPlugin extends Plugin {
     settings: PluginSettings;
     DEFAULT_SETTINGS: Partial<PluginSettings> = {
       excludeFilesFilter: null,
+      superchargedLinks: false,
     };
     private view: HierarchicalOutgoingLinksView;
     async onload() {

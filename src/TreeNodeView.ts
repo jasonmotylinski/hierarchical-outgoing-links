@@ -1,9 +1,11 @@
-import { App, getIcon } from "obsidian";
-import { TreeNode } from "./types";
+import { App, getIcon, TFile } from "obsidian";
+import { PluginSettings, TreeNode } from "./types";
 import { findLinkPosition, findMarkdownViewForFile, scrollToLink } from "./linkLocation";
+import { applySuperchargedAttributes, extractTags } from "./superchargedAttributes";
 
 export class TreeNodeView{
     private app: App;
+    private settings?: PluginSettings;
     private isCollapsed: boolean;
 	private canToggleIcon: boolean=true;
 	private isResolvedLink: boolean=false;
@@ -13,8 +15,9 @@ export class TreeNodeView{
     private treeItemIcon: HTMLDivElement;
     private treeNode: TreeNode;
     private treeNodeViewChildren: TreeNodeView[];
-    constructor(app: App, parent: HTMLDivElement, treeNode: TreeNode) {
+    constructor(app: App, parent: HTMLDivElement, treeNode: TreeNode, settings?: PluginSettings) {
         this.app=app;
+        this.settings=settings;
         this.isCollapsed=false;
         this.parent=parent;
         this.treeNode=treeNode;
@@ -55,9 +58,10 @@ export class TreeNodeView{
         this.treeItemIcon=parent.createDiv({cls: "tree-item-icon collapse-icon"});
 
         let name = treeNode.name;
+        let firstLink: TFile | null = null;
         if(treeNode.children && treeNode.children.length == 0){
-            const firstLink=this.app.metadataCache.getFirstLinkpathDest(treeNode.name, '');
-            
+            firstLink=this.app.metadataCache.getFirstLinkpathDest(treeNode.name, '');
+
             if(firstLink){
                 name=firstLink.basename;
                 this.treeItemIcon.appendChild(getIcon("lucide-link")!);
@@ -72,6 +76,19 @@ export class TreeNodeView{
             this.treeItemIcon.appendChild(getIcon("right-triangle")!);
         }
         const treeItemInner=parent.createDiv({cls: "tree-item-inner", text: name});
+
+        // Supercharged Links interop: decorate resolved leaf rows with the
+        // destination note's metadata so existing Supercharged Links CSS
+        // snippets color them. Only resolved links have a backing file.
+        if(this.settings?.superchargedLinks && firstLink){
+            const cache=this.app.metadataCache.getFileCache(firstLink);
+            applySuperchargedAttributes(treeItemInner, {
+                path: firstLink.path,
+                basename: firstLink.basename,
+                frontmatter: cache?.frontmatter as Record<string, unknown> | undefined,
+                tags: extractTags(cache),
+            });
+        }
         treeItemInner.addEventListener("click", (e)=>{
             // Clicking the note name opens the target note; stop the event from
             // bubbling to the row handler that jumps to the link instead.
@@ -95,7 +112,7 @@ export class TreeNodeView{
     appendTreeItemChildren(treeItem:HTMLDivElement, children :TreeNode[]){
         const treeItemChildren=treeItem.createDiv({cls: "tree-item-children"});
         children.forEach((c)=>{ 
-            const treeNodeView=new TreeNodeView(this.app, treeItemChildren, c);
+            const treeNodeView=new TreeNodeView(this.app, treeItemChildren, c, this.settings);
             treeNodeView.render();
             this.treeNodeViewChildren.push(treeNodeView);
         });

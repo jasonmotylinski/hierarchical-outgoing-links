@@ -70,6 +70,63 @@ describe("TreeNodeView jump affordance (#6)", () => {
     });
 });
 
+describe("TreeNodeView Supercharged Links attributes", () => {
+    // App whose resolved leaf has frontmatter + tags in its file cache.
+    function makeChargedApp(): App {
+        const target = { basename: "Target", name: "Target.md", path: "Areas/Target.md" };
+        return {
+            metadataCache: {
+                getFirstLinkpathDest: () => target,
+                getFileCache: () => ({
+                    tags: [{ tag: "#project" }],
+                    frontmatter: { status: "active", tags: ["project"] },
+                }),
+            },
+            workspace: {
+                getActiveFile: () => null,
+                getActiveViewOfType: () => null,
+                openLinkText: vi.fn(),
+            },
+        } as unknown as App;
+    }
+
+    async function renderWithSettings(app: App, node: TreeNode, supercharged: boolean): Promise<HTMLElement> {
+        const { TreeNodeView } = await import("../src/TreeNodeView");
+        const parent = document.createElement("div");
+        new TreeNodeView(app, parent as HTMLDivElement, node, {
+            excludeFilesFilter: null,
+            superchargedLinks: supercharged,
+        }).render();
+        return parent;
+    }
+
+    it("decorates resolved leaf rows when the setting is on", async () => {
+        const parent = await renderWithSettings(makeChargedApp(), leaf("Target"), true);
+        const inner = parent.querySelector(".tree-item-inner") as HTMLElement;
+
+        expect(inner.getAttribute("data-link-path")).toBe("Areas/Target.md");
+        expect(inner.getAttribute("data-link-status")).toBe("active");
+        expect(inner.getAttribute("data-link-tags")).toBe("project");
+        expect(inner.classList.contains("data-link-text")).toBe(true);
+    });
+
+    it("does not decorate when the setting is off", async () => {
+        const parent = await renderWithSettings(makeChargedApp(), leaf("Target"), false);
+        const inner = parent.querySelector(".tree-item-inner") as HTMLElement;
+
+        expect(inner.hasAttribute("data-link-path")).toBe(false);
+        expect(inner.classList.contains("data-link-text")).toBe(false);
+    });
+
+    it("does not decorate unresolved leaves even when the setting is on", async () => {
+        const app = makeApp({ resolves: false });
+        const parent = await renderWithSettings(app, leaf("Missing"), true);
+        const inner = parent.querySelector(".tree-item-inner") as HTMLElement;
+
+        expect(inner.hasAttribute("data-link-path")).toBe(false);
+    });
+});
+
 describe("TreeNodeView icon behaviour (#7)", () => {
     it("opens the note when the leaf icon is clicked, without bubbling to the jump handler", async () => {
         const openLinkText = vi.fn();
